@@ -1,0 +1,134 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model BusinessType {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  shops     Shop[]
+}
+
+model User {
+  id           String       @id @default(uuid())
+  name         String
+  phone        String       @unique
+  passwordHash String?
+  isVerified   Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  shops        ShopMember[]
+  otpCodes     OtpCode[]
+}
+
+model OtpCode {
+  id        String   @id @default(uuid())
+  userId    String
+  code      String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Shop {
+  id               String            @id @default(uuid())
+  name             String
+  location         String?
+  description      String?
+  businessTypeId   Int?
+  ownerId          String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  members          ShopMember[]
+  businessType     BusinessType?     @relation(fields: [businessTypeId], references: [id])
+  whatsappAccounts WhatsappAccount[]
+  products         Product[]
+  categories       Category[]
+  stockMovements   StockMovement[]
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  shopId    String
+  name      String
+  createdAt DateTime  @default(now())
+  shop      Shop      @relation(fields: [shopId], references: [id])
+  products  Product[]
+
+  @@unique([shopId, name])
+}
+
+model Product {
+  id                String          @id @default(uuid())
+  shopId            String
+  categoryId        String?
+  name              String
+  description       String?
+  barcode           String?
+  buyingPrice       Int             @default(0)
+  sellingPrice      Int             @default(0)
+  stockQuantity     Int             @default(0)
+  lowStockThreshold Int             @default(5)
+  imageUrl          String?
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  shop              Shop            @relation(fields: [shopId], references: [id])
+  category          Category?       @relation(fields: [categoryId], references: [id])
+  stockMovements    StockMovement[]
+
+  @@unique([shopId, barcode])
+}
+
+model StockMovement {
+  id        String   @id @default(uuid())
+  productId String
+  shopId    String
+  type      String   // IN | OUT | ADJUSTMENT
+  quantity  Int
+  note      String?
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  shop      Shop     @relation(fields: [shopId], references: [id])
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  shopId        String?
+  operation     String
+  previousValue String?
+  newValue      String?
+  source        String   @default("APP")
+  createdAt     DateTime @default(now())
+}
+model ShopMember {
+  id        String   @id @default(uuid())
+  shopId    String
+  userId    String
+  role      String   @default("OWNER")
+  createdAt DateTime @default(now())
+  shop      Shop     @relation(fields: [shopId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model WhatsappAccount {
+  id                    String    @id @default(uuid())
+  shopId                String
+  phoneNumber           String    @unique
+  isVerified            Boolean   @default(false)
+  verificationCode      String?
+  verificationExpiresAt DateTime?
+  linkedAt              DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  shop                  Shop      @relation(fields: [shopId], references: [id])
+}
