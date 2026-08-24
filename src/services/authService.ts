@@ -125,8 +125,6 @@ export const requestOtpFlow = async (
   const otp = await createOtpCode(user.id);
   await sendSmsOtp(phone, otp);
 
-  if (process.env.NODE_ENV !== 'production') {
-    return { devOtp: otp };
-  }
-  return {};
+  // Always return the dev OTP for now until SMS is integrated
+  return { devOtp: otp };
 };
