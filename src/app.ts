@@ -7,6 +7,7 @@ import authRoutes from './routes/auth';
 import shopRoutes from './routes/shops';
 import productRoutes from './routes/products';
 import aiRoutes from './routes/ai';
+import whatsappRoutes from './routes/whatsapp';
 import { errorHandler } from './middleware/errorHandler';
 import { seedBusinessTypes } from './services/shopService';
 
@@ -19,6 +20,7 @@ const port = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -35,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/shops/me', productRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Error handling
 app.use(errorHandler);
@@ -48,3 +51,4 @@ app.listen(port, async () => {
     console.error('[SERVER] Failed to seed business types:', error);
   }
 });
+
