@@ -1,10 +1,10 @@
-﻿services:
+services:
   - type: web
     name: aishop-backend
     runtime: node
     plan: free
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npx prisma db push && node dist/app.js
+    startCommand: "npx prisma db push --accept-data-loss && node dist/app.js"
     envVars:
       - key: NODE_ENV
         value: production
