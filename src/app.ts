@@ -8,6 +8,7 @@ import shopRoutes from './routes/shops';
 import productRoutes from './routes/products';
 import aiRoutes from './routes/ai';
 import whatsappRoutes from './routes/whatsapp';
+import saleRoutes from './routes/sales';
 import { errorHandler } from './middleware/errorHandler';
 import { seedBusinessTypes } from './services/shopService';
 
@@ -38,6 +39,7 @@ app.use('/api/shops', shopRoutes);
 app.use('/api/shops/me', productRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/shops/me/sales', saleRoutes);
 
 // Error handling
 app.use(errorHandler);
@@ -51,4 +53,5 @@ app.listen(port, async () => {
     console.error('[SERVER] Failed to seed business types:', error);
   }
 });
+
 
