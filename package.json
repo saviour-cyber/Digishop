@@ -1,11 +1,11 @@
 {
-  "name": "backend",
+  "name": "aishop-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
     "dev": "tsx src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "npx prisma db push --accept-data-loss && node dist/app.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev"
   },
